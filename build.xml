@@ -10,12 +10,19 @@
 	<property name="source" location="${apidir}" />
 	<property name="lib" location="lib" />
 	<property name="tmp" location="tmp" />
-
+	<property name="xsd" location="xsd" />	
 
 	<target name="init">
 		<tstamp />
 		<mkdir dir="${output}" />
 		<mkdir dir="${tmp}" />
+	</target>
+	
+	<target name="validate" depends="init">
+        <schemavalidate file="${source}/${apiname}.xml">
+            <schema namespace="http://www.ioexception.de/rest-api-doc" file="xsd/rest-api-doc.xsd" />
+            <schema namespace="http://www.w3.org/2001/XMLSchema" file="xsd/XMLSchema.xsd" />
+         </schemavalidate>	    
 	</target>
 
 	<target name="plain" depends="init">

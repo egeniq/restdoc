@@ -380,6 +380,9 @@ a{
 		
 		<h4>Request Entities</h4>
 		<xsl:apply-templates select="api:request/api:entities" />
+
+		<h4>Request Parameters</h4>
+		<xsl:apply-templates select="api:request/api:params" />
 		
 		<h4>Responses</h4>
 		<xsl:apply-templates select="api:response/api:responses" />
@@ -405,7 +408,23 @@ a{
 
 	<xsl:template match="api:entity">
 		<xsl:apply-templates />
+	</xsl:template>		
+	
+
+	<xsl:template match="api:params">
+		<xsl:choose>
+			<xsl:when test="count(api:param) > 0">
+				<xsl:apply-templates />
+			</xsl:when>
+			<xsl:otherwise>n/a</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>	
+
+	<xsl:template match="api:param">
+	    <xsl:value-of select="@name" /> (<xsl:value-of select="@type" />)
+		<xsl:apply-templates />
 	</xsl:template>			
+		
 			
 	<xsl:template match="api:method">
 		<span class="method"><xsl:apply-templates /></span>

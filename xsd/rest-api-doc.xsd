@@ -79,8 +79,10 @@
 					<xsd:attribute use="required" name="mandatory" type="xsd:boolean" />
 				</xsd:complexType>
 			</xsd:element>
-			<xsd:element name="entities" type="entityType" />
-
+			<xsd:choice>
+			    <xsd:element name="entities" type="entityType" />
+                <xsd:element name="params" type="paramsType" />
+            </xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -104,6 +106,34 @@
 			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
+	
+	<xsd:complexType name="paramsType">
+	    <xsd:sequence maxOccurs="unbounded">
+		    <xsd:element name="param" minOccurs="0" maxOccurs="unbounded">
+		        <xsd:complexType>
+				    <xsd:all>
+					    <xsd:element name="code" type="codeType" minOccurs="0" />
+					    <xsd:element name="description" type="xsd:string" minOccurs="1" />
+				    </xsd:all>
+    			    <xsd:attribute use="required" name="name" type="xsd:string" />						
+    			    <xsd:attribute use="required" name="mandatory" type="xsd:boolean" />			
+    			    <xsd:attribute use="required" name="type">							
+                        <xsd:simpleType>
+                            <xsd:restriction base="xsd:string">
+                                <xsd:enumeration value="boolean"/>
+                                <xsd:enumeration value="integer"/>
+                                <xsd:enumeration value="string"/>                        
+                                <xsd:enumeration value="date"/>
+                                <xsd:enumeration value="file"/>                        
+                                <xsd:enumeration value="json"/>                                                
+                            </xsd:restriction>
+                        </xsd:simpleType>				
+    			    </xsd:attribute>
+    			    <xsd:attribute default="false" name="list" type="xsd:boolean" />			
+		        </xsd:complexType>
+		    </xsd:element>
+	    </xsd:sequence>	
+    </xsd:complexType>
 
 	<xsd:complexType name="returnsType">
 		<xsd:sequence minOccurs="1" maxOccurs="unbounded">
