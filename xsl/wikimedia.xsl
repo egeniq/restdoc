@@ -18,16 +18,16 @@
 	</xsl:template>
 
 	<xsl:template match="api:api">
-        <xsl:text>= </xsl:text><xsl:value-of select="api:name"/><xsl:text> API Documentation</xsl:text>&cr;
-        <xsl:text>This page has been auto generated, please don't edit!</xsl:text>ja
-		<xsl:text>Version: </xsl:text><xsl:apply-templates select="api:version" />&cr;
-		<xsl:text>Base URI: </xsl:text><xsl:apply-templates select="api:baseuri" />&cr;
+        <xsl:text>= </xsl:text><xsl:value-of select="api:name"/><xsl:text> API Documentation =</xsl:text>&cr;
+        <xsl:text>This page has been auto generated, please don't edit!</xsl:text>&cr;&cr;
+		<xsl:text>Version: </xsl:text><xsl:apply-templates select="api:version" />&cr;&cr;
+		<xsl:text>Base URI: </xsl:text><xsl:apply-templates select="api:baseuri" />&cr;&cr;
 		<xsl:text>Authentication: </xsl:text><xsl:apply-templates select="api:authentication" />&cr;
 		&cr;
-        <xsl:text>== Description</xsl:text>&cr;
+        <xsl:text>== Description ==</xsl:text>&cr;
         <xsl:apply-templates select="api:description" />&cr;
         &cr;
-        <xsl:text>== Resources</xsl:text>&cr;
+        <xsl:text>== Resources ==</xsl:text>&cr;
 		<xsl:for-each select="//api:resource">
 			<xsl:sort select="api:name"/>
             <xsl:apply-templates select="." />&cr;			
@@ -35,7 +35,7 @@
 	</xsl:template>
 	
 	<xsl:template match="api:resource">
-	    <xsl:text>=== </xsl:text><xsl:value-of select="api:name"/>&cr;
+        <xsl:text>=== </xsl:text><xsl:value-of select="api:name"/><xsl:text> ===</xsl:text>&cr;
         <xsl:apply-templates select="api:description" />&cr;
         &cr;
 		<xsl:for-each select="api:operation">
@@ -58,7 +58,7 @@
             </xsl:for-each>
         </xsl:variable>			    
 	    
-	    <xsl:text>==== </xsl:text><xsl:value-of select="api:request/api:method"/>&space;<xsl:value-of select="$resourceURI"/>&cr;
+        <xsl:text>==== </xsl:text><xsl:value-of select="api:request/api:method"/>&space;<xsl:value-of select="$resourceURI"/><xsl:text> ====</xsl:text>&cr;
 
         <xsl:text>{| class="wikitable"</xsl:text>&cr;
         
@@ -188,9 +188,9 @@
 
 	<xsl:template match="api:code">
 		<xsl:text>Language: <xsl:value-of select="@language" /></xsl:text>&cr;
-		<xsl:text>+----------------------------------------------------------------+</xsl:text>		
+        <xsl:text>&lt;source lang="</xsl:text><xsl:value-of select="@language" /><xsl:text>"&gt;</xsl:text>
 		<xsl:apply-templates />&cr;
-		<xsl:text>+----------------------------------------------------------------+</xsl:text>&cr;
+        <xsl:text>&lt;/source&gt;</xsl:text>
 	</xsl:template>
 
 	<xsl:template match="api:formats">
