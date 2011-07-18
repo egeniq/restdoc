@@ -76,9 +76,11 @@
 					<xsl:text>: </xsl:text>
     				<xsl:value-of select="@description" />&cr;
                 </xsl:for-each> 			        
-			    
+
+                <xsl:text>| &cr;</xsl:text>
+
                 <xsl:for-each select="api:request/api:params/api:param">
-            	    <xsl:text>| </xsl:text>
+            	    <xsl:text>* </xsl:text>
             	    <xsl:value-of select="@name" /> 
             	    <xsl:text> (</xsl:text>
             	    <xsl:if test="@list = 'true'">
@@ -104,8 +106,8 @@
 
         <xsl:text>|-</xsl:text>&cr;
         <xsl:text>! Response status codes</xsl:text>&cr;
+		<xsl:text>| &cr;</xsl:text>
 		<xsl:for-each select="api:response/api:responses/api:answer">
-		    <xsl:text>| </xsl:text>
 			<xsl:call-template name="statuscode">
 				<xsl:with-param name="code"><xsl:value-of select="@code" /></xsl:with-param>
 			</xsl:call-template>			
@@ -222,6 +224,7 @@
 	</xsl:template>
 		
 	<xsl:template name="statuscode">
+        <xsl:text>* </xsl:text>
 		<xsl:param name="code" />
 		
 		<xsl:value-of select="$code" /><xsl:text> ("</xsl:text>
