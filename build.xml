@@ -10,15 +10,22 @@
 	<property name="source" location="${apidir}" />
 	<property name="lib" location="lib" />
 	<property name="tmp" location="tmp" />
-
+	<property name="xsd" location="xsd" />	
 
 	<target name="init">
 		<tstamp />
 		<mkdir dir="${output}" />
 		<mkdir dir="${tmp}" />
 	</target>
+	
+	<target name="validate" depends="init">
+        <schemavalidate file="${source}/${apiname}.xml">
+            <schema namespace="http://www.ioexception.de/rest-api-doc" file="xsd/rest-api-doc.xsd" />
+            <schema namespace="http://www.w3.org/2001/XMLSchema" file="xsd/XMLSchema.xsd" />
+         </schemavalidate>	    
+	</target>
 
-	<target name="plain" depends="init">
+	<target name="plain" depends="init,validate">
 		<xslt in="${source}/${apiname}.xml" out="${output}/${apidir}/${apiname}.txt" style="xsl/text.xsl">
 			<outputproperty name="omit-xml-declaration" value="yes" />
 			<outputproperty name="method" value="text" />
@@ -26,13 +33,22 @@
 			<outputproperty name="media-type" value="text/plain" />
 		</xslt>
 	</target>
+	
+	<target name="wikimedia" depends="init,validate">
+		<xslt in="${source}/${apiname}.xml" out="${output}/${apidir}/${apiname}.wikimedia.txt" style="xsl/wikimedia.xsl">
+			<outputproperty name="omit-xml-declaration" value="yes" />
+			<outputproperty name="method" value="text" />
+			<outputproperty name="indent" value="no" />
+			<outputproperty name="media-type" value="text/plain" />
+		</xslt>
+	</target>	
 
-	<target name="xhtml" depends="init">
+	<target name="xhtml" depends="init,validate">
 		<xslt in="${source}/${apiname}.xml" out="${output}/${apidir}/${apiname}.html" style="xsl/xhtml.xsl">
 		</xslt>
 	</target>
 
-	<target name="tex" depends="init">
+	<target name="tex" depends="init,validate">
 		<xslt in="${source}/${apiname}.xml" out="${tmp}/${apiname}.tex" style="xsl/latex.xsl">
 			<outputproperty name="omit-xml-declaration" value="yes" />
 			<outputproperty name="method" value="text" />
@@ -41,7 +57,7 @@
 		</xslt>
 	</target>
 
-	<target name="pdf" depends="tex">
+	<target name="pdf" depends="tex,validate">
 		<exec dir="${tmp}" executable="pdflatex">
 			<arg value="${tmp}/${apiname}.tex" />
 		</exec>
@@ -51,9 +67,7 @@
 		<copy file="${tmp}/${apiname}.pdf" tofile="${output}/${apidir}/${apiname}.pdf" />
 	</target>
 
-
 	<target name="all" depends="plain,xhtml,pdf" />
-
 
 	<target name="clean" description="clean up">
 		<delete dir="${output}" />
