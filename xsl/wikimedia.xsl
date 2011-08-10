@@ -11,31 +11,35 @@
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:api="http://www.ioexception.de/rest-api-doc">
 
 <xsl:output method="text" omit-xml-declaration="yes" indent="no"/>
-
 	<xsl:variable name="baseURI"><xsl:value-of select="api:api/api:baseuri"></xsl:value-of></xsl:variable>
 
 	<xsl:template match="*">
 	</xsl:template>
 
 	<xsl:template match="api:api">
-        <xsl:text>= </xsl:text><xsl:value-of select="api:name"/><xsl:text> API Documentation =</xsl:text>&cr;
-        <xsl:text>This page has been auto generated, please don't edit!</xsl:text>&cr;&cr;
-		<xsl:text>Version: </xsl:text><xsl:apply-templates select="api:version" />&cr;&cr;
-		<xsl:text>Base URI: </xsl:text><xsl:apply-templates select="api:baseuri" />&cr;&cr;
-		<xsl:text>Authentication: </xsl:text><xsl:apply-templates select="api:authentication" />&cr;
+        <xsl:text>This page has been auto generated, please don't edit!</xsl:text>&cr;
+        &cr;
+        <xsl:text>{| class="wikitable"</xsl:text>&cr;
+        <xsl:text>|-</xsl:text>&cr;
+        <xsl:text>| '''Version'''</xsl:text>&cr;
+        <xsl:text>| </xsl:text><xsl:apply-templates select="api:version" />&cr;
+        <xsl:text>|-</xsl:text>&cr;         
+        <xsl:text>| '''Base URI'''</xsl:text>&cr;
+        <xsl:text>| </xsl:text><xsl:apply-templates select="api:baseuri" />&cr;
+        <xsl:text>|-</xsl:text>&cr;         
+        <xsl:text>| '''Authentication'''</xsl:text>&cr;
+        <xsl:text>| </xsl:text><xsl:apply-templates select="api:authentication" />&cr;
+		<xsl:text>|}</xsl:text>&cr;
 		&cr;
-        <xsl:text>== Description ==</xsl:text>&cr;
         <xsl:apply-templates select="api:description" />&cr;
         &cr;
-        <xsl:text>== Resources ==</xsl:text>&cr;
 		<xsl:for-each select="//api:resource">
-			<xsl:sort select="api:name"/>
             <xsl:apply-templates select="." />&cr;			
 		</xsl:for-each>		
 	</xsl:template>
 	
 	<xsl:template match="api:resource">
-        <xsl:text>=== </xsl:text><xsl:value-of select="api:name"/><xsl:text> ===</xsl:text>&cr;
+        <xsl:text>= </xsl:text><xsl:value-of select="api:name"/><xsl:text> =</xsl:text>&cr;
         <xsl:apply-templates select="api:description" />&cr;
         &cr;
 		<xsl:for-each select="api:operation">
@@ -44,33 +48,40 @@
 		</xsl:for-each>
 	</xsl:template>
 	
+	<xsl:template match="api:path">
+        <xsl:for-each select="node()">
+	       <xsl:choose>
+     			<xsl:when test="@description">
+					<xsl:text>[</xsl:text>
+						<xsl:value-of select="." />
+					<xsl:text>]</xsl:text>
+				</xsl:when>
+				<xsl:otherwise><xsl:value-of select="." /></xsl:otherwise>
+			</xsl:choose>
+         </xsl:for-each>
+	</xsl:template>
+	
 	<xsl:template match="api:operation">
         <xsl:variable name="resourceURI">
-           <xsl:for-each select="api:path/node()">
-		       <xsl:choose>
-        			<xsl:when test="@description">
-						<xsl:text>{</xsl:text>
-							<xsl:value-of select="." />
-						<xsl:text>}</xsl:text>
-					</xsl:when>
-					<xsl:otherwise><xsl:value-of select="." /></xsl:otherwise>
-				</xsl:choose>
-            </xsl:for-each>
-        </xsl:variable>			    
+            <xsl:text>/</xsl:text>
+		    <xsl:apply-templates select="../api:path" />
+            <xsl:text>/</xsl:text>		    
+		    <xsl:apply-templates select="api:path" />
+      	</xsl:variable>	
 	    
-        <xsl:text>==== </xsl:text>
+        <xsl:text>== </xsl:text>
         <xsl:value-of select="api:request/api:method"/>&space;
         <xsl:value-of select="$resourceURI" />
-        <xsl:text> ====</xsl:text>&cr;
+        <xsl:text> ==</xsl:text>&cr;
 
         <xsl:text>{| class="wikitable"</xsl:text>&cr;
         
         <xsl:text>|-</xsl:text>&cr;
-        <xsl:text>! Description</xsl:text>&cr;
+        <xsl:text>| style="vertical-align: top" | '''Description'''</xsl:text>&cr;
         <xsl:text>| </xsl:text><xsl:apply-templates select="api:description" />&cr;
         
         <xsl:text>|-</xsl:text>&cr;
-        <xsl:text>! URL parameters</xsl:text>&cr;
+        <xsl:text>| style="vertical-align: top" | '''URL parameters'''</xsl:text>&cr;
 		<xsl:choose>
 			<xsl:when test="count(api:path/api:param/@description) > 0">
                 <xsl:for-each select="api:path/api:param">
@@ -79,7 +90,6 @@
 					<xsl:text>: </xsl:text>
     				<xsl:value-of select="@description" />&cr;
                 </xsl:for-each> 			        
-
 			</xsl:when>
 			<xsl:otherwise>
 			    <xsl:text>| none</xsl:text>&cr;
@@ -87,7 +97,7 @@
 		</xsl:choose>
 
         <xsl:text>|-</xsl:text>&cr;
-        <xsl:text>! Request parameters</xsl:text>&cr;
+        <xsl:text>| style="vertical-align: top" | '''Request parameters'''</xsl:text>&cr;
 		<xsl:choose>
 			<xsl:when test="count(api:request/api:params/api:param) > 0">
                 <xsl:text>| </xsl:text>&cr;
@@ -109,15 +119,15 @@
 		</xsl:choose>
         
         <xsl:text>|-</xsl:text>&cr;
-        <xsl:text>! Authentication</xsl:text>&cr;
+        <xsl:text>| style="vertical-align: top" | '''Authentication'''</xsl:text>&cr;
         <xsl:text>| </xsl:text><xsl:apply-templates select="api:request/api:authentication" />&cr;   			        	
         
         <xsl:text>|-</xsl:text>&cr;
-        <xsl:text>! Caching</xsl:text>&cr;
+        <xsl:text>| style="vertical-align: top" | '''Caching'''</xsl:text>&cr;
         <xsl:text>| </xsl:text><xsl:apply-templates select="api:caching" />&cr;
 
         <xsl:text>|-</xsl:text>&cr;
-        <xsl:text>! Response status codes</xsl:text>&cr;
+        <xsl:text>| style="vertical-align: top" | '''Response status codes'''</xsl:text>&cr;
 		<xsl:text>| &cr;</xsl:text>
 		<xsl:for-each select="api:response/api:responses/api:answer">
 			<xsl:call-template name="statuscode">
@@ -127,14 +137,14 @@
 		</xsl:for-each>
 
         <xsl:text>|-</xsl:text>&cr;
-        <xsl:text>! Response formats</xsl:text>&cr;
+        <xsl:text>| style="vertical-align: top" | '''Response formats'''</xsl:text>&cr;
         <xsl:for-each select="api:formats/api:format">
         	<xsl:text>| </xsl:text><xsl:apply-templates select="." />&cr;   			        	
         </xsl:for-each>
 
 		<xsl:if test="count(api:response/api:entities/api:entity) > 0">
             <xsl:text>|-</xsl:text>&cr;
-            <xsl:text>! Response entities</xsl:text>&cr;
+            <xsl:text>| style="vertical-align: top" | '''Response entities'''</xsl:text>&cr;
             <xsl:text>| </xsl:text>&cr;
 			<xsl:for-each select="api:response/api:entities/api:entity">
                 <xsl:text>* </xsl:text>
@@ -214,10 +224,6 @@
 	</xsl:template>
 
 	<xsl:template match="api:format">
-		<xsl:apply-templates />
-	</xsl:template>
-	
-	<xsl:template match="api:path">
 		<xsl:apply-templates />
 	</xsl:template>
 	
